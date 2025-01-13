@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Produits</title>
+    <!-- Inclure Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7fa; color: #333; font-size: 14px; }
+        header { background-color: #3A8D7D; color: white; text-align: center; padding: 15px; font-size: 1.4rem; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #3a7c69; }
+        header h1 { margin: 0; font-size: 1.5rem; }
+        .logout-button { background-color: #F76C6C; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
+        .logout-button:hover { background-color: #e64a4a; }
+        .container { width: 90%; margin: 30px auto; padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; font-size: 12px; }
+        th { background-color: #3A8D7D; color: white; }
+        td { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
+        .btn, .btn-delete { width: 80px; padding: 8px 0; font-size: 0.9rem; border-radius: 6px; cursor: pointer; }
+        .btn { background-color: #3A8D7D; color: white; }
+        .btn:hover { background-color: #2d6c58; }
+        .btn-delete { background-color: #F76C6C; color: white; }
+        .btn-delete:hover { background-color: #e64a4a; }
+        .action-buttons { display: flex; gap: 10px; }
+        .no-products { text-align: center; font-size: 1rem; color: #888; margin-top: 20px; }
+        .add-button { background-color: #5C6BC0; text-align: center; margin: 80px 0 25px 0; padding: 10px 16px; border-radius: 8px; font-size: 1rem; color: white; text-decoration: none; }
+        .add-button:hover { background-color: #3e4e91; }
+        .search-container { display: flex; justify-content: flex-start; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .search-container input[type="text"] { padding: 8px; width: 250px; border: 2px solid #ddd; border-radius: 6px; font-size: 0.9rem; }
+        .search-container input[type="text"]:focus { border-color: #3A8D7D; }
+        .search-container button { padding: 8px 14px; background-color: #3A8D7D; color: white; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; }
+        .search-container button:hover { background-color: #2d6c58; }
+        @media (max-width: 768px) {
+            .container { width: 95%; }
+            table { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Liste des Produits</h1>
+    <form th:action="@{/logout}" method="post" style="margin: 0;">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
+</header>
+
+<div class="container">
+    <!-- Message de succès pour ajout/modification -->
+    <div th:if="${message != null}" class="alert alert-success" role="alert" id="successMessage">
+        <span th:text="${message}">Message de succès ici</span>
+    </div>
+
+    <!-- Bouton Ajouter un produit -->
+    <a href="/products/new" class="add-button">Ajouter un produit</a>
+
+    <form action="/products/search" method="get">
+        <div class="search-container">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Rechercher un produit">
+            <button type="submit">Rechercher</button>
+        </div>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Marque</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Prix</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.id}">1</td>
+            <td th:text="${product.name}">Nom du produit</td>
+            <td th:text="${product.marque}">Marque</td>
+            <td th:text="${product.category?.name != null ? product.category.name : 'N/A'}">Category</td>
+            <td th:text="${product.description}">Description</td>
+            <td th:text="${product.price}">100.0</td>
+            <td class="action-buttons">
+                <a th:href="@{'/products/edit/' + ${product.id}}" class="btn">Modifier</a>
+                <form th:action="@{'/products/delete/' + ${product.id}}" method="post">
+                    <input type="hidden" name="_method" value="delete">
+                    <button type="submit" class="btn btn-delete">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${products == null or products.isEmpty()}" class="no-products">
+        <p>Aucun produit disponible pour le moment.</p>
+    </div>
+</div>
+
+<!-- Inclure Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Lorsque la page se charge, masquer le message de succès après 3 secondes
+    window.addEventListener('load', function() {
+        var successMessage = document.getElementById('successMessage');
+        if (successMessage) {
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 3000); // Disparaît après 3 secondes
+        }
+    });
+</script>
+
+</body>
+</html>

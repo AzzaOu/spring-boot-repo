@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .  # Use the current directory as the build context
+      dockerfile: Dockerfile  # Ensure this Dockerfile is in the root directory
+    ports:
+      - "8083:8083"  # Expose Spring Boot's default port
+    volumes:
+      - ./target:/app  # Bind mount for your compiled .jar file (adjust if necessary)
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod  # Optional: set your Spring profile
+
