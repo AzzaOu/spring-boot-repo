@@ -1,7 +1,9 @@
-from openjdk:17-jdk-slim
+FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-copy target/*.jar app.jar
+# Copy the specific JAR file into the container
+COPY target/demo-0.0.1-SNAPSHOT.jar /app/demo-0.0.1-SNAPSHOT.jar
 
-ENTRYPOINT ["java","-jar","app.jar"]
+# Set the entrypoint to execute the copied JAR file img
+ENTRYPOINT ["java", "-jar", "/app/demo-0.0.1-SNAPSHOT.jar"]

@@ -1,0 +1,11 @@
+groups:
+  - name: example
+    rules:
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total[1m]) > 0.8
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage is high"
+          description: "CPU usage exceeds 80%"

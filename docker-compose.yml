@@ -10,5 +10,5 @@ services:
     volumes:
       - ./target:/app  # Bind mount for your compiled .jar file (adjust if necessary)
     environment:
-      - SPRING_PROFILES_ACTIVE=prod  # Optional: set your Spring profile
+      - SPRING_PROFILES_ACTIVE=prod  # Optional: set your Spring profile BD
 
